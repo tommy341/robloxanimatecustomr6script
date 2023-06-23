@@ -1,5 +1,3 @@
--- humanoidAnimateR15Moods.lua
-
 local Character = script.Parent
 local Humanoid = Character:WaitForChild("Humanoid")
 local pose = "Standing"
@@ -577,6 +575,67 @@ function stopToolAnimations()
 	return oldAnim
 end
 
+local char=script.Parent
+local cos30=math.cos(math.pi/6)
+local cos60=math.cos(math.pi/3)
+
+local run = script:WaitForChild("run"):WaitForChild("RunAnim").AnimationId
+local runBackward = script:WaitForChild("runBackward"):WaitForChild("RunBackwardAnim").AnimationId
+local runLeft = script:WaitForChild("runLeft"):WaitForChild("RunLeftAnim").AnimationId
+local runRight = script:WaitForChild("runRight"):WaitForChild("RunRightAnim").AnimationId
+local runForwardLeft = script:WaitForChild("runForwardLeft"):WaitForChild("RunForwardLeftAnim").AnimationId
+local runForwardRight = script:WaitForChild("runForwardRight"):WaitForChild("RunForwardRightAnim").AnimationId
+local runBackwardLeft = script:WaitForChild("runBackwardLeft"):WaitForChild("RunBackwardLeft").AnimationId
+local runBackwardRight = script:WaitForChild("runBackwardRight"):WaitForChild("runBackwardRight").AnimationId
+
+local runID = script:WaitForChild("run"):Clone()
+local temp = Instance.new("Folder")
+temp.Name = "temp"
+temp.Parent = char:WaitForChild("Animate")
+runID.Parent = char:WaitForChild("Animate"):WaitForChild("temp")
+local getRunID = script:WaitForChild("temp"):WaitForChild("run"):WaitForChild("RunAnim").AnimationId
+local humanoid = char:WaitForChild("Humanoid")
+
+game["Run Service"].RenderStepped:Connect(function()
+
+	local currentAnimationController=nil
+	local walkDir=char.HumanoidRootPart.CFrame.Rotation:PointToObjectSpace(Vector3.new(char.HumanoidRootPart.Velocity.X,0,char.HumanoidRootPart.Velocity.Z).Unit)
+
+	if walkDir.X>cos60 and walkDir.X<cos30 then
+		if walkDir.Z<0 then
+			print("forward-right")
+			run = runForwardRight
+		else
+			print("backward-right")
+			run = runBackwardRight
+		end
+	elseif walkDir.X<-cos60 and walkDir.X>-cos30 then
+		if walkDir.Z<0 then
+			print("forward-left")
+			run = runForwardLeft
+		else
+			print("backward-left")
+			run = runBackwardLeft
+		end
+	elseif walkDir.X>-cos60 and walkDir.X<cos60 then
+		if walkDir.Z<0 then
+			print("forward")
+			run = getRunID
+		else
+			print("backward")
+			run = runBackward
+		end
+	elseif walkDir.Z>-cos60 and walkDir.Z<cos60 then
+		if walkDir.X<0 then
+			print("left")
+			run = runLeft
+		else
+			print("right")
+			run = runRight
+		end
+	end
+end)
+
 -------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------
 -- STATE CHANGE HANDLERS
@@ -801,4 +860,3 @@ while Character.Parent ~= nil do
 	local _, currentGameTime = wait(0.1)
 	stepAnimate(currentGameTime)
 end
-
